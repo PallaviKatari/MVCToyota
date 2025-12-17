@@ -1,0 +1,29 @@
+﻿@using MVCDemo.Models
+@model List<Student> 
+@* 1,John 2,Anna *@
+
+<h3>Student List</h3>
+
+@* anchor tag - navigating *@
+@* Navigate to the Action method in StudentController and return the view of Add Action Method
+ *@<a asp-action="Add">Add New</a>
+
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.Id</td>
+            <td>@s.Name</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@s.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@s.Id">Delete</a>
+            </td>
+        </tr>
+    }
+</table>

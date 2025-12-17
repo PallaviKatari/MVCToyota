@@ -1,0 +1,9 @@
+﻿@using MVCDemo.Models
+@model List<Employee>
+
+<ul>
+    @foreach (var s in Model)
+    {
+        <li>@s.Name</li>
+    }
+</ul>

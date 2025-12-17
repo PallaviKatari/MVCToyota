@@ -1,0 +1,13 @@
+﻿@using MVCDemo.Models
+@model Student
+
+<h3>Add Student</h3>
+
+@* form tag method-post/get *@
+<form asp-action="Add" method="post">
+    Name:
+    <input asp-for="Name" />
+    <br /><br />
+
+    <button type="submit">Save</button>
+</form>

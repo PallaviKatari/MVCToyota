@@ -34,5 +34,16 @@ namespace MVCDemo.Controllers
             return View();
         }
 
+        [Route("employee/employeelist")]
+        public IActionResult EmployeeList()
+        {
+            var employees = new List<Employee>
+    {
+        new Employee { Id = 1, Name = "John" },
+        new Employee { Id = 2, Name = "Anna" }
+    };
+            return View(employees);
+        }
+
     }
 }
