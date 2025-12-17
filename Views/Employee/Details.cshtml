@@ -1,0 +1,11 @@
+﻿@* @ - Razor view syntax *@
+@using MVCDemo.Models
+@model Employee
+
+<h1>Employee Details</h1>
+@* unordered list *@
+<ul>
+ @*    list item *@
+    <li>@Model.Id</li>
+    <li>@Model.Name</li>
+</ul>
