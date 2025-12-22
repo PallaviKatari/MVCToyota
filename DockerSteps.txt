@@ -1,0 +1,244 @@
+﻿🟦 PART 1 — Create a New MVC Project (Explained in Detail)
+✅ Step 1: Install the .NET SDK
+
+To build and run .NET MVC applications, your computer needs the .NET SDK (Software Development Kit).
+
+🔗 Download page:
+https://dotnet.microsoft.com/en-us/download
+
+The SDK includes:
+
+C# compiler
+
+ASP.NET MVC libraries
+
+Dotnet CLI (dotnet command)
+
+Templates (like MVC, Razor Pages, API)
+
+After installing, check your version:
+
+dotnet --version
+
+
+If you see a version number (like 8.0.x), everything is ready.
+
+✅ Step 2: Create a folder for your MVC app
+
+You usually keep each project in its own folder.
+
+mkdir MyMvcApp
+cd MyMvcApp
+
+
+Now you're inside your empty project directory.
+
+✅ Step 3: Create a brand-new MVC project
+dotnet new mvc -n MyMvcApp
+
+💡 What this command means:
+
+dotnet new mvc → create a new MVC web application with controllers & views
+
+-n MyMvcApp → sets the project name
+
+It creates a folder named MyMvcApp containing the project files
+
+So inside this folder you will get:
+
+Controllers/ → Handles user requests
+
+Views/ → Razor pages seen by the user
+
+wwwroot/ → CSS, JS, images
+
+Program.cs → Entry point for your web server
+
+MyMvcApp.csproj → Project file listing dependencies
+
+Move into that folder:
+
+cd MyMvcApp
+
+✅ Step 4: Run the MVC app locally
+dotnet run
+
+
+You will see messages like:
+
+Now listening on: http://localhost:5000
+Now listening on: https://localhost:7000
+
+
+This means:
+
+http://localhost:5000 → HTTP version (no encryption)
+
+https://localhost:7000 → HTTPS version (secure)
+
+Open the browser → You will see the default MVC website.
+
+Stop it with:
+
+Ctrl + C
+
+🟦 PART 2 — Containerize the MVC App (Explained Deeply)
+
+Here we convert your MVC application into a Docker image so it can run in a container.
+
+A Dockerfile tells Docker how to build the image.
+
+✅ Step 5: Create a Dockerfile
+
+🖥️ Using Command Prompt (Windows)
+Create an empty Dockerfile:
+
+cmd
+echo. > Dockerfile
+This makes a blank file named Dockerfile in the current directory.
+
+Go into your project folder where .csproj is.
+
+Create a file named Dockerfile (no extension!) and paste:
+
+# Build Stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# copy csproj and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
+
+# copy everything and publish
+COPY . ./
+RUN dotnet publish -c Release -o /app/publish
+
+# Runtime Stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:80
+
+ENTRYPOINT ["dotnet", "MyMvcApp.dll"]
+
+🔍 Understanding every section
+🔹 1. FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+Use the .NET SDK image to:
+
+Restore NuGet packages
+
+Compile your code
+
+Publish it
+
+This container has the full compiler and tools.
+
+🔹 2. *COPY .csproj ./
+
+Copies only the .csproj file.
+Docker does this so restore can run before copying all files (faster builds).
+
+🔹 3. RUN dotnet restore
+
+Downloads all NuGet dependencies.
+
+🔹 4. COPY . ./
+
+Copies the entire project folder into the container.
+
+🔹 5. RUN dotnet publish
+
+Produces compiled output in /app/publish.
+
+🔹 6. FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+
+This is the runtime image:
+
+Much smaller
+
+Only includes ASP.NET runtime
+
+Does NOT include build tools
+
+This keeps your final image lightweight.
+
+🔹 7. COPY --from=build /app/publish .
+
+Copies the published output from the build stage.
+
+🔹 8. EXPOSE 80
+
+Tells Docker the app listens on port 80 (not required but helpful).
+
+🔹 9. ENTRYPOINT ["dotnet", "MVCDemo.dll"]
+
+This runs the app when the container starts.
+
+✅ Step 6: Create .dockerignore
+
+This file tells Docker what NOT to copy into the image.
+
+Create .dockerignore:
+
+bin/
+obj/
+.vs/
+*.user
+*.suo
+node_modules/
+
+
+This speeds up Docker builds and keeps the image smaller.
+
+🟦 PART 3 — Build & Run the Docker Container (Full Explanation)
+✅ Step 7: Build the Docker image
+
+Open terminal INSIDE the project folder (where the Dockerfile is):
+
+docker build -t my-mvc-app .
+
+🔍 What happens during build:
+
+Docker reads Dockerfile
+
+Creates build environment
+
+Restores NuGet packages
+
+Compiles your MVC app
+
+Publishes output
+
+Copies published files into final image
+
+Creates the final image named my-mvc-app
+
+Confirm the image is created:
+
+docker images
+
+✅ Step 8: Run the container
+docker run -d -p 8080:80 --name my-mvc-container my-mvc-app
+
+🔍 What this means:
+
+-d → run in background
+
+-p 8080:80
+
+Left side = your computer (port 8080)
+
+Right side = inside container (port 80)
+
+--name my-mvc-container → easier to manage
+
+my-mvc-app → your image name
+
+Now open:
+
+👉 http://localhost:8080
+
+You will see your MVC app running inside Docker.
