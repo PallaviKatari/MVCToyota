@@ -20,4 +20,4 @@ ENV ASPNETCORE_URLS=http://+:80
 
 ENTRYPOINT ["dotnet", "MVCDemo.dll"]
 
- 
+#Latest Docker updated on 12.1.26
